@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DEMO</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/16.6.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.6.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body {
+      background-color: #f8f8f8;
+      color: #222;
+      font-family: -apple-system, sans-serif;          
+    }
+    #root {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .status {
+      background-color: #fff;
+      padding: 10px 20px;
+      border-radius: 4px;
+      box-shadow: 0 0 3px rgba(0, 0, 0, .16);
+    }
+  </style>
+</head>
+
+<body>
+  <div id='root'></div>
+  <script type='text/babel'>
+    class App extends React.Component {
+      constructor(props) {
+        super(props)
+	      this.state = {
+            status: "Refreshing..."
+          };
+        }
+      componentDidMount() {
+        this.es = new EventSource('/api/events');
+        this.es.onopen = () => {
+            this.setState({
+                status: 'Connected',
+                count: 0
+            });
+        };
+        this.es.addEventListener('msg', msg => {
+            this.setState({
+                count: this.state.count + 1
+            });
+        });
+      }
+      render() {
+        let { count } = this.state;
+	      return (
+	          <div className="status">
+    	          <h1>Status: { count ? `Received ${count} messages` : this.state.status }</h1>
+	          </div>
+	      )
+      }
+    }
+    ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
